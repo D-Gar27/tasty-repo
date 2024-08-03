@@ -8,18 +8,34 @@ import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-
 import { FaLock } from "react-icons/fa6";
 import { Card } from "@mui/material";
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const firstName = data.get("firstName") as string;
+    const lastName = data.get("lastName") as string;
+    const name = `${firstName} ${lastName}`;
+    const email = data.get("email");
+    const password = data.get("password");
+    const navigate  = useNavigate();
+     
+    try {
+      const response = await axios.post('https://tasty-test-nestjs.onrender.com/api/auth/register', {
+        name,
+        email,
+        password,
+      });
+      console.log(response.data);
+      // Handle successful registration, e.g., navigate to a different page or show a success message
+    } catch (error) {
+      console.error("There was an error registering!", error);
+        navigate('/login');
+    }  
   };
 
   return (
@@ -91,9 +107,7 @@ export default function Register() {
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
-                  control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
-                  }
+                  control={<Checkbox value="allowExtraEmails" color="primary" />}
                   label="I agree to the terms and conditions"
                 />
               </Grid>

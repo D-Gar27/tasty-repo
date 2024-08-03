@@ -49,9 +49,12 @@ const Histories = () => {
       </Typography>
       <List>
         {sampleHistories.map((order) => (
-          <Link to={`/histories/${order.orderId}`}>
+          <Link
+            to={`${order.orderId}`}
+            key={order.orderId}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
             <Paper
-              key={order.orderId}
               sx={{
                 p: 2,
                 borderRadius: 2,

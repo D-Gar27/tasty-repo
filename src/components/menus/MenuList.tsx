@@ -1,7 +1,9 @@
 import { Grid } from "@mui/material";
 import MenuItem from "./MenuItem";
+import { foodList } from "../../lib/data/foodList";
 
 export default function MenuList() {
+  
   return (
     <ul className="pb-20 pt-4 px-4 w-full">
       <Grid
@@ -12,9 +14,10 @@ export default function MenuList() {
           placeItems: "center",
         }}
       >
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((item) => (
-          <Grid key={item} component="li" item xs={1}>
-            <MenuItem />
+        {foodList.map((item , index ) => (
+          <Grid key={index} component="li" item xs={1}>
+            <MenuItem data={item} />
+            
           </Grid>
         ))}
       </Grid>

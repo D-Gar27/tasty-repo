@@ -9,6 +9,9 @@ import MenuDetails from "../pages/main/menu/MenuDetails";
 import Cart from "../pages/main/Cart";
 import Checkout from "../pages/main/Checkout";
 import Summary from "../pages/main/Summary";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
+import HistoriesDetails from "../pages/main/HistoriesDetials";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +19,18 @@ const router = createBrowserRouter([
     element: <Login />,
     errorElement: <Error />,
   },
+  {
+path:'/forgot-password',
+element:<ForgotPassword />,
+errorElement: <Error />,
+
+  },
+  {
+path:'/reset-password',
+element : <ResetPassword/>,
+errorElement : <Error/>
+  }, 
+  
   {
     path: "/register",
     element: <Register />,
@@ -30,6 +45,12 @@ const router = createBrowserRouter([
     path: "/checkout/summary",
     element: <Summary />,
     errorElement: <Error />,
+  },
+  {
+path:'/reset-password',
+element: <ResetPassword/>,
+errorElement: <Error />,
+
   },
   {
     path: "/main",
@@ -50,7 +71,17 @@ const router = createBrowserRouter([
       {
         path: "histories",
         element: <Histories />,
+      
       },
+      {
+        path: "histories/:id",
+        element :  <HistoriesDetails />,
+
+      
+      },
+      
+      
+     
     ],
   },
 ]);
