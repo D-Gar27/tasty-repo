@@ -1,31 +1,37 @@
+import React from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
+import useSelectedFood from "../../store/useSelectedFood";
 
-const image =
-  "https://www.foodandwine.com/thmb/mMJAvZyK09gP8_sIfViIVyMm_YE=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/urdaburger-FT-RECIPE0621-f8488fae404d4ae686d612a7bb201fe3.jpg";
+interface MenuItemProps {
+  data: {
+    name: string;
+    price: number;
+    image: string;
+    [key: string]: any;
+  };
+}
 
-export default function MenuItem({data}) {
-  
+export default function MenuItem({ data }: MenuItemProps) {
+  const { updateSelectedFood } = useSelectedFood();
   const navigate = useNavigate();
+
   return (
     <Card
       component="button"
-      onClick={() =>
-        navigate("/main/menu-details", {  
-          state: {
-            id: data.id,
-          },
-        })
-      }
+      onClick={() => {
+        updateSelectedFood(data);
+        navigate("/main/menu-details");
+      }}
       className="relative mx-auto sm:w-52 sm:h-56 w-48 h-52"
     >
       <CardMedia
         component="img"
-        alt="green iguana"
-        image={data.imageUrl}
+        alt="Food Image"
+        image={data.image}
         className="w-full h-full object-cover"
       />
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-[rgba(0,0,0,0.7)] to-transparent"></div>

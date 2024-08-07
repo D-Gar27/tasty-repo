@@ -7,6 +7,8 @@ interface CartState {
   resetCartCount: () => void;
 }
 
+
+
 const useCartStore = create<CartState>((set) => ({
   cartCount: 0,
   increaseCartCount: () => set((state) => ({ cartCount: state.cartCount + 1 })),

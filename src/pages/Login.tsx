@@ -39,10 +39,15 @@ export default function SignIn() {
         email,
         password,
       });
-      const token = response.data.access_token;
+      const token = response.data.result.access_token;
+      const userId = response.data.result.user.id;
+      
+      
 
       // Store token in localStorage
       localStorage.setItem('access_token', token);
+      localStorage.setItem('user_id', userId);
+
       setIsAuthenticated(true);
       Swal.fire('Success', 'Logged in successfully!', 'success');
       navigate('/main');
