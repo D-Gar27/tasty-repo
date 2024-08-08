@@ -30,7 +30,15 @@ export default function MenuList() {
       console.error(error);
     }
   };
-
+  const buttons = Array.from({ length: 10 }).map((_, index) => (
+    <Button
+      key={index}
+      variant="contained"
+      sx={{ margin: "0 8px" }}
+    >
+      hello
+    </Button>
+  ))
   // Initial load
   useEffect(() => {
     getFoodList(); // Load all food items initially
@@ -45,17 +53,18 @@ export default function MenuList() {
 
   return (
     <div>
-      <Box display="flex" justifyContent="center" mb={2}>
+      <Box display="flex" justifyContent="start" marginTop='3rem' mb={2}>
         {categories.map((category) => (
           <Button
             key={category.id}
-            variant={selectedCategory === category.id ? "contained" : "outlined"}
+          variant="contained"
             onClick={() => handleCategoryClick(category.id)}
             sx={{ margin: "0 8px" }}
           >
             {category.name}
           </Button>
         ))}
+ 
       </Box>
 
       <ul className="pb-20 pt-4 px-4 w-full">

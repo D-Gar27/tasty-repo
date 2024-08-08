@@ -22,6 +22,7 @@ import useSelectedFood from "../../../store/useSelectedFood";
 interface Topping {
   name: string;
   price: number;
+  id: string; // Add id to the Topping interface
 }
 
 const MenuDetails = () => {
@@ -29,8 +30,9 @@ const MenuDetails = () => {
   const theme = useTheme();
   const [quantity, setQuantity] = useState(1);
   const [selectedToppings, setSelectedToppings] = useState<Topping[]>([]);
-  const [selectedMeat, setSelectedMeat] = useState<string>("");
+  const [selectedMeat, setSelectedMeat] = useState<Topping | null>(null); // Update type
   const [request, setRequest] = useState("");
+  const [isTakeOut, setIsTakeOut] = useState(false); // New state for takeout option
 
   useEffect(() => {
     console.log(selectedFood.toppings[0].is_radio);
@@ -54,23 +56,65 @@ const MenuDetails = () => {
   };
 
   const handleMeatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-
     const id = event.target.value;
-    setSelectedMeat(selectedFood.toppings[0].items.filter((el)=> el.id == id  ));
-
+    const selected = selectedFood.toppings[0].items.find((el) => el.id === id);
+    setSelectedMeat(selected ? selected : null);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    const userId = localStorage.getItem("user_id");
+    const token = localStorage.getItem("access_token"); // Retrieve the token from localStorage
+    if (!userId || !selectedFood || !token) {
+      alert("User ID, selected food, or token is missing");
+      return;
+    }
+
     const totalToppingPrice = selectedToppings.reduce(
       (acc, topping) => acc + topping.price,
       0
     );
-let  finalPrice = (selectedFood.price + totalToppingPrice) * quantity;
-    if(selectedFood.toppings[0].is_radio){
-       finalPrice = (selectedFood.price + selectedMeat[0].add_on_price) * quantity;
-
+    let finalPrice = (selectedFood.price + totalToppingPrice) * quantity;
+    if (selectedFood.toppings[0].is_radio && selectedMeat) {
+      finalPrice = (selectedFood.price + selectedMeat.add_on_price) * quantity;
     }
-    alert(`Final Price: $${finalPrice.toFixed(2)}`);
+
+    const toppingItemIds = selectedToppings.map((t) => t.id);
+    if (selectedMeat) {
+      toppingItemIds.push(selectedMeat.id);
+    }
+
+    const payload = {
+      userId,
+      foodId: selectedFood.id,
+      quantity,
+      remark: request,
+      isTakeOut,
+      toppingItemIds,
+    };
+
+    try {
+      const response = await fetch(
+        "https://tasty-test-nestjs.onrender.com/api/cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`, // Add the Bearer token here
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      alert(`Order placed successfully! Order ID: ${data.id}`);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("Failed to add to cart");
+    }
   };
 
   return (
@@ -106,7 +150,7 @@ let  finalPrice = (selectedFood.price + totalToppingPrice) * quantity;
               {selectedFood.toppings.label}
             </Typography>
             {selectedFood.toppings[0].is_radio ? (
-              <RadioGroup value={selectedMeat} onChange={handleMeatChange}>
+              <RadioGroup value={selectedMeat?.id || ""} onChange={handleMeatChange}>
                 {selectedFood.toppings[0].items?.map((item) => (
                   <div className="w-full flex justify-between" key={item.id}>
                     <FormControlLabel
@@ -114,7 +158,7 @@ let  finalPrice = (selectedFood.price + totalToppingPrice) * quantity;
                       control={<Radio />}
                       sx={{ fontSize: "0.8rem" }}
                       label={item.name}
-                      checked ={selectedMeat[0].id == item.id}
+                      checked={selectedMeat?.id === item.id}
                     />
                     {item.add_on_price !== 0 && <p>{item.add_on_price} Ks</p>}
                   </div>
@@ -144,6 +188,16 @@ let  finalPrice = (selectedFood.price + totalToppingPrice) * quantity;
           </Box>
         )}
       </FormControl>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={isTakeOut}
+            onChange={(e) => setIsTakeOut(e.target.checked)}
+            name="isTakeOut"
+          />
+        }
+        label="Take Out"
+      />
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography fontWeight={600}>Quantity</Typography>
         <Box display="flex" alignItems="center">
